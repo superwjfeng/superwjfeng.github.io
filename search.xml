@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Hello World</title>
+    <url>/2023/05/21/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>机器学习总述</title>
+    <url>/2023/05/21/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%80%BB%E8%BF%B0/</url>
+    <content><![CDATA[<h1 id="机器学习总述"><a href="#机器学习总述" class="headerlink" title="机器学习总述"></a>机器学习总述</h1><h2 id="机器学习分类"><a href="#机器学习分类" class="headerlink" title="机器学习分类"></a><em>机器学习分类</em></h2><ul>
+<li><p>监督学习 Supervised learning</p>
+<ul>
+<li>KNN</li>
+<li>决策树</li>
+<li>线性回归<ul>
+<li>优化角度</li>
+<li>概率角度<ul>
+<li>MLE</li>
+<li>MAP</li>
+<li>Full Bayersian Analysis</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>线性分类</p>
+<ul>
+<li>按照软分类和硬分类分</li>
+<li>硬分类：输出标签<ul>
+<li>线性判别分析/Fisher判别</li>
+<li>感知机</li>
+<li>SVM</li>
+</ul>
+</li>
+<li><p>软分类：输出概率</p>
+<ul>
+<li>连续：GDA 高斯判别分析</li>
+<li><p>离散</p>
+<ul>
+<li>Naive Bayes：假设各Feautures条件独立，MAP</li>
+<li>Gaussian Naive Bayes：假设各Feautures条件独立，且条件概率服从高斯分布，MAP</li>
+</ul>
+</li>
+<li><p>Logistic Regression：将输出值映射成概率空间，输出一个概率（可能性）</p>
+</li>
+</ul>
+</li>
+<li><p>按照判别式和生成式分</p>
+<ul>
+<li>判别式<ul>
+<li>感知机</li>
+<li>SVM</li>
+<li>逻辑回归</li>
+</ul>
+</li>
+<li>生成式<ul>
+<li>线性判别分析/Fisher判别</li>
+<li>高斯判别分析（特例朴素贝叶斯）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>SVM<ul>
+<li>线形可分：硬间隔</li>
+<li>线形不可分：软间隔+核技巧升维</li>
+<li>支撑向量回归 SVR</li>
+</ul>
+</li>
+<li>DL</li>
+</ul>
+</li>
+<li>无监督学习 Unsupervised learning<ul>
+<li>降维</li>
+<li>聚类<ul>
+<li>K均值聚类</li>
+<li>层次聚类</li>
+<li>谱聚类</li>
+</ul>
+</li>
+<li>GMM与EM算法</li>
+</ul>
+</li>
+<li>半监督学习 Semi-supervised learning</li>
+<li>强化学习 Reinforcement learning</li>
+</ul>
+<h2 id="频率派-VS-贝叶斯派"><a href="#频率派-VS-贝叶斯派" class="headerlink" title="频率派 VS 贝叶斯派"></a><em>频率派 VS 贝叶斯派</em></h2><h3 id="频率派的观点"><a href="#频率派的观点" class="headerlink" title="频率派的观点"></a>频率派的观点</h3><p>$p(x|\theta)$中的 $\theta$ 是一个常量。对于 $N$ 个观测来说观测集的概率为 $p(X|\theta)\mathop{=}\limits <em>{iid}\prod\limits </em>{i=1}^{N}p(x_{i}|\theta))$ 。为了求 $\theta$ 的大小，我们采用最大对数似然MLE的方法</p>
+<script type="math/tex; mode=display">
+\theta_{MLE}=\mathop{argmax}\limits _{\theta}\log p(X|\theta)\mathop{=}\limits _{iid}\mathop{argmax}\limits _{\theta}\sum\limits _{i=1}^{N}\log p(x_{i}|\theta)</script><p>在过程中需要求令似然函数达到最大值的参数 $\theta$，这需要考虑函数的凸性质，因此本质上变成了一个优化问题。频率派发展出了一系列的统计机器学习方法</p>
+<h3 id="贝叶斯派的观点"><a href="#贝叶斯派的观点" class="headerlink" title="贝叶斯派的观点"></a>贝叶斯派的观点</h3><p>贝叶斯派认为 $p(x|\theta)$ 中的 $\theta$ 不是一个常量。这个 $\theta$ 满足一个预设的先验的分布 $\theta\sim p(\theta)$ 。于是根据贝叶斯定理依赖观测集参数的后验可以写成下式。在此基础上有MAP、完全贝叶斯分析等方法</p>
+<script type="math/tex; mode=display">
+p(\theta|X)=\frac{p(X|\theta)\cdot p(\theta)}{p(X)}=\frac{p(X|\theta)\cdot p(\theta)}{\int\limits _{\theta}p(X|\theta)\cdot p(\theta)d\theta}</script><p>贝叶斯的算法最后都会变成积分的问题，因为高维随机变量和随机过程的积分会非常难以求解，在此基础上出现了概率图、MCMC等贝叶斯派机器学习方法</p>
+<h2 id="机器学习里的重要标准"><a href="#机器学习里的重要标准" class="headerlink" title="机器学习里的重要标准"></a><em>机器学习里的重要标准</em></h2><h3 id="分类的衡量标准"><a href="#分类的衡量标准" class="headerlink" title="分类的衡量标准"></a>分类的衡量标准</h3><ul>
+<li>Accuracy</li>
+<li>Precision</li>
+<li>Sensitivity/Recall</li>
+<li>Specificity</li>
+<li>False Negative Rate</li>
+<li>False Positive Rate</li>
+<li>F1 Score</li>
+</ul>
+<h2 id="衡量距离"><a href="#衡量距离" class="headerlink" title="衡量距离"></a><em>衡量距离</em></h2><p>这部分看 Linear Algebra 的范数与距离部分</p>
+]]></content>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+</search>
