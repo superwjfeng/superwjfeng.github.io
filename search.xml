@@ -115,4 +115,235 @@ p(\theta|X)=\frac{p(X|\theta)\cdot p(\theta)}{p(X)}=\frac{p(X|\theta)\cdot p(\th
         <tag>机器学习</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文翻译 Are we heading towards a BBR-dominant Internet</title>
+    <url>/2023/06/26/%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91-Are-we-heading-towards-a-BBR-dominant-Internet/</url>
+    <content><![CDATA[<p>Author: Ayush Mishra, Wee Han Tiu, and Ben Leong from National University of Singapore<br>译者：Weijian Feng 封伟健 Technische Universität München, School of CIT, Seminar Internet Measurement</p>
+<h1 id="Are-we-heading-towards-a-BBR-dominant-Internet"><a href="#Are-we-heading-towards-a-BBR-dominant-Internet" class="headerlink" title="Are we heading towards a BBR-dominant Internet?"></a>Are we heading towards a BBR-dominant Internet?</h1><h2 id="ABSTRACT"><a href="#ABSTRACT" class="headerlink" title="ABSTRACT"></a><em>ABSTRACT</em></h2><p>自2016年引入以来，BBR迅速受到欢迎，很可能已经占据了互联网下行流量的40%以上。本文探讨以下问题：鉴于BBR的性能优势和快速普及，BBR是否有可能像CUBIC替代New Reno一样完全取代CUBIC？</p>
+<p>我们提出了一个数学模型，可以在与CUBIC流竞争时，将BBR的吞吐量估计误差控制在5%以内。使用这个模型，我们展示了尽管BBR目前相对CUBIC具有吞吐量优势，但随着BBR流的比例增加，这种优势将减弱。</p>
+<p>因此，如果吞吐量是一个关键考虑因素，互联网很可能达到CUBIC和BBR流的稳定混合分布。这种混合分布将是一个纳什均衡，其中没有任何流具有切换CUBIC和BBR的性能激励。我们的方法也适用于其他最近提出的拥塞控制算法，如BBRv2和PCC Vivace。我们大胆预测，BBR在不久的将来不太可能完全取代互联网上的CUBIC。</p>
+<h2 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a><em>INTRODUCTION</em></h2><p>BBR [4]（拥塞控制算法）最早由Google于2016年引入，相比其他基于丢包的TCP变体，BBR提供更好的吞吐量和更低的延迟。随后，BBR在互联网上得到广泛部署。根据2019年末的一项最新测量研究，估计BBR很可能已经占据了互联网下行流量的40%以上 [20]。在本文中，我们尝试回答以下研究问题：因此，我们是否应该预期在不久的将来大多数互联网用户会转向使用BBR？</p>
+<p>这是一个重要的问题，因为互联网的稳定性取决于竞争流之间的良好交互。多年来，我们没有经历过拥塞崩溃[17]，这很可能是因为绝大多数流都是基于AIMD/MIMD窗口的TCP流[9]。互联网拥塞情况的最后一次重大变化发生在CUBIC替代New Reno[22, 31]之时。然而，这个过渡相对渐进，因为CUBIC和New Reno都是基于丢包和拥塞窗口的算法。因此，所有现有的网络解决方案、流量控制算法和主动队列管理算法已经在互联网上部署，并且可以基本保持不变。</p>
+<p>另一方面，如果BBR作为主导的拥塞控制算法取代CUBIC，将代表一种基本的范式转变。许多经典的网络问题，据称已经解决，将不得不重新评估。例如，曾经说过路由器缓冲区的大小应该与 $\sqrt{N}$ 成反比，其中 $N$ 是流的数量[2]。后来，研究表明，在某些条件下，即使是微小的缓冲区也可能足够[11]。然而，这些经验法则假设流是基于丢包的。BBR是无关丢包的[27]。换句话说，如果未来的互联网主要由BBR流组成[20]，可能会产生潜在广泛的影响，甚至基本问题如缓冲区大小也需要重新审视[19]。</p>
+<p>预测互联网拥塞控制格局的未来组成的第一步是了解切换到BBR的动机。像Dropbox [16]、YouTube [5]和Spotify [7]这样采用了BBR的公司，都引用了更好的吞吐量作为切换的最常见原因。为了确定切换到BBR是否会持续产生更好的吞吐量，我们需要了解BBR流与CUBIC流的交互方式。尽管Ware等人[30]先前提出了一个模型，但我们发现其中的一些假设并不现实，并通过实验证实了他们的模型不能进行准确的预测。为了填补这个空白，我们开发了一个新的模型，能够在大多数实际缓冲区大小下，准确地模拟BBR的性能，误差控制在5%以内。</p>
+<p>通过准确建模竞争的CUBIC和BBR流，我们将CUBIC和BBR流之间的相互作用建模为一个正态形式博弈。通过这样做，我们可以将网站选择拥塞控制算法的设置抽象为一个简单的博弈，其中一些参与者（网站）通过选择一些预定义的策略（即运行CUBIC或BBR）来最大化效用（吞吐量）。然后，我们可以应用标准的博弈论分析来确定是否存在纳什均衡。纳什均衡（NE）是一种策略分布，其中在其他玩家的策略保持不变的情况下，没有任何参与者通过切换策略而获得任何好处。在我们的问题背景下，纳什均衡是CUBIC和BBR流的稳定分布，使得没有任何流有切换拥塞控制算法的动机。</p>
+<p>通过解决正态形式博弈，我们展示了在大多数具有现实配置的网络中，CUBIC和BBR流的纳什均衡分布将存在。我们的模型还能够预测这些纳什均衡分布，并通过大量实验证明这些预测是准确的。本文的贡献可以总结如下：</p>
+<ol>
+<li>我们提出了一个新的数学模型，用于预测竞争的CUBIC和BBR流的带宽份额。我们通过大量实验验证我们的模型，展示了它在预测带宽份额方面比Ware等人[30]目前的模型更准确。</li>
+<li>借助我们的模型，我们能够预测随着BBR流的比例增加，BBR相对于CUBIC的吞吐量增益将逐渐减少。</li>
+<li>我们将我们的模型调整为确定具有相同往返时间（RTT）的多个流的纳什均衡分布，并且从理论和实证两方面展示了这个纳什均衡是CUBIC和BBR流的混合分布。我们还展示了我们的分析似乎也适用于BBRv2，这是Google当前正在开发的BBR的升级版本[6]。</li>
+</ol>
+<p>总而言之，我们提出了一个数学模型，用于理解CUBIC和BBR之间的竞争，并利用其结果来预测互联网拥塞控制格局的未来。我们预测，尽管BBR，或许是BBRv2，可能变得更受欢迎，但如果更好的吞吐量是关键考虑因素，互联网的大多数部分不太可能完全从CUBIC切换到BBR。我们观察到，随着BBR流的比例增加，BBR的吞吐量优势递减。随着越来越多的流量在互联网上切换到BBR，CUBIC可能会变得更具竞争力，直到没有切换的动机为止。</p>
+<p>虽然我们的模型的局限性在于假设所有流量具有相同的RTT，但我们认为这个假设是合理的，因为今天大部分互联网流量是通过内容分发网络（CDN）[24]提供的。这意味着在本地瓶颈处的流量具有相似的RTT是相当合理的。我们通过增强我们的模型来预测网络中CUBIC和BBR流的纳什均衡分布，并展示了互联网上CUBIC和BBR的最终混合主要取决于瓶颈缓冲区大小和竞争流量的RTT。</p>
+<h2 id="MODELLING-INTERACTIONS-BETWEENBBR-AND-CUBIC"><a href="#MODELLING-INTERACTIONS-BETWEENBBR-AND-CUBIC" class="headerlink" title="MODELLING INTERACTIONS BETWEENBBR AND CUBIC"></a><em>MODELLING INTERACTIONS BETWEENBBR AND CUBIC</em></h2><p>在本节中，我们首先描述一个基本模型，该模型能够预测当一个CUBIC流与一个BBR流在一个共同的瓶颈处竞争时的吞吐量份额。接下来，我们将该模型扩展到具有多个CUBIC和BBR流的情况。为简单起见，我们假设所有竞争流都具有相同的基本RTT。我们注意到，今天大部分的互联网流量是通过内容分发网络（CDN）[24]提供的，因此在本地瓶颈处，大多数流具有相似的RTT并不罕见。在这种情况下，我们认为这个假设在许多情境中可能是适用的。</p>
+<h3 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h3><p><strong>BBR概述</strong>：BBR（Bottleneck Bandwidth and Round-trip propagation time）是Google在2016年提出的一种基于速率的拥塞控制算法[4]。BBR通过估计瓶颈带宽和路径的最小往返时间（RTT）来调节TCP的发送速率。在此过程中，BBR在两倍带宽时延乘积（BDP）的范围内限制其正在传输的数据量。BBR被实现为一个状态机，具有以下4个状态，以进行定期和连续的测量以保持其估计值的最新状态：</p>
+<ol>
+<li>Startup：为了快速学习瓶颈带宽，BBR通过每次迭代将发送轮次加倍来执行指数搜索。通过这样做，它能够在 $\mathcal{O}\left(\log_{2}{BDP}\right)$ 个往返中找到瓶颈带宽。当BBR检测到管道已满，并且带宽估计值呈平台状态时，BBR将转入Drain阶段。</li>
+<li>Drain：BBR通过将正在排队中的数据包数减少到1个BDP来排空在激进启动阶段中累积的数据包。一旦BBR估计队列已排空，但管道仍然满载，BBR将进入ProbeBW阶段。</li>
+<li>ProbeBW：BBR在ProbeBW状态下花费大部分时间，并使用一种称为增益循环（gain cycling）的技术来探测瓶颈带宽。BBR进行一次持续8个RTT的循环：首先以最大接收速率的1.25倍发送数据包，以探测瓶颈处的额外带宽。为了补偿这种激进行为，BBR在接下来的一个RTT中以最大接收速率的0.75倍发送数据包，对于接下来的6个RTT，它将保持其发送速率为最大接收速率。</li>
+<li>ProbeRTT：为了准确估计最小RTT（$RTT_{\min}$），BBR需要排空瓶颈缓冲区。BBR每隔10秒进入ProbeRTT阶段，将正在传输的数据包数减少到4，以尝试排空缓冲区。</li>
+</ol>
+<p><strong>CUBIC概述</strong>：TCP CUBIC（Congestion control using Bandwidth estimate）[13]是一种基于丢包的算法，这意味着当它遇到数据包丢失时，会将拥塞窗口（cwnd）缩小0.7倍。否则，它使用方程（1）增加cwnd。</p>
+<script type="math/tex; mode=display">
+cwnd(t)=C\times(t-K)^3+W_{\max}</script><p>$W<em>{max}$ 是在窗口通过 $K=\sqrt[3]{W</em>{\max}\times(1-\beta<em>{cubic})/C}$ 之前的窗口尺寸。在Linux内核中CUBIC的实现是如此设置参数：$C=0.4,\ \beta</em>{cubic}=0.3$。我们的模型中，CUBIC流的关键点是当有丢包时会将cwnd降低到 $0.7\times W_{\max}$</p>
+<h3 id="Issues-with-Model-by-Ware-et-al"><a href="#Issues-with-Model-by-Ware-et-al" class="headerlink" title="Issues with Model by Ware et al."></a>Issues with Model by Ware et al.</h3><p>到目前为止，根据我们的了解，目前关于CUBIC和BBR之间相互作用的最佳状态模型是由Ware等人提出的模型[30]。他们的模型预测了竞争的BBR流的总带宽，其表示为：</p>
+<script type="math/tex; mode=display">
+BBR_{frac}=(1-p)\left(\frac{d-Probe_{time}}{d}\right)</script><p>其中</p>
+<script type="math/tex; mode=display">
+p=\frac{1}{2}-\frac{1}{2X}-\frac{4N}{q}</script><script type="math/tex; mode=display">
+Probe_{time}=\left(\frac{q}{c}+.2+l\right)\left(\frac{d}{10}\right)</script><p>其中，$p$ 表示竞争的CUBIC流的瓶颈带宽 $c$ 的总分数。$N$ 是竞争的BBR流的数量，$q$ 是瓶颈缓冲区的平均排队延迟，$X$ 是BDP中瓶颈缓冲区的大小。$l$ 是所有流的base RTT，$d$ 是流竞争的持续时间。</p>
+<p>他们的模型预测，无论竞争的CUBIC流的数量如何，BBR流都会获得瓶颈带宽的固定份额。尽管从定性上看，该模型确实提出了一些有趣的观察结果（例如，Ware等人首次强调BBR的 in-flight 数据上限在确定其与其他CUBIC流的竞争中的作用），但我们发现他们的模型在实验中与实际的BBR性能存在显著差异。我们可以从Figure 1（译者注：见原论文）的结果中看出这一点，该结果是在一个50Mbps瓶颈链路上进行的简单实验，其中一个CUBIC流与一个BBR流竞争，每个流持续2分钟，基本RTT为40 ms。 通过分析，我们发现Ware等人的模型[30]的不准确性是由以下假设导致的：</p>
+<ol>
+<li>问题最大的假设是缓冲区始终是满的。这个假设很可能是出于简单起见，因为即使在[30]的实验中也证明了这个假设是不正确的。</li>
+<li>第二个假设是过于简化了BBR的RTT等于基本无拥塞的RTT加上 $p\times q$，其中 $p$ 是CUBIC在链路容量中的份额，$q$ 是瓶颈缓冲区的大小。由于流的吞吐量与其平均缓冲区占用成正比，这个计算意味着CUBIC的平均缓冲区占用导致了BBR的 $RTT<em>{\min}$ 估计值的膨胀。然而，由于BBR在ProbeRTT阶段测量 $RTT</em>{\min}$，可以推断出这种膨胀应受CUBIC的最小缓冲区占用的影响，而不是平均缓冲区占用。当与第一个假设结合时，这个问题进一步恶化，即缓冲区始终是满的。这实际上固定了CUBIC的缓冲区占用，并使用了实际上是CUBIC的最大缓冲区占用来计算BBR的膨胀的 $RTT_{\min}$ 估计值。</li>
+</ol>
+<p>我们的新模型中没有这些假设。当涉及多个CUBIC流时，我们推导出一个置信区间，而不是假设CUBIC在链路容量中的份额是固定的。这个区间不仅准确预测了竞争流的实际平均带宽，还捕捉到了这些相互作用的随机性，这是由于CUBIC流在多次试验和网络条件下的同步程度不同引起的。</p>
+<h3 id="Basic-2-Flow-Model"><a href="#Basic-2-Flow-Model" class="headerlink" title="Basic 2-Flow Model"></a>Basic 2-Flow Model</h3><p>本节中，我们描述了一个简单的模型，可以预测两个竞争的CUBIC和BBR流经过简单的滴落队列时的带宽份额。在该模型中，两个流具有相同的base/最小RTT，并在具有链路容量 $C$ 和缓冲区大小 $B$ 的瓶颈处竞争。</p>
+<p><strong>假设</strong>。我们的模型基于以下假设：</p>
+<ol>
+<li><strong>链路始终被充分利用</strong>。由于我们的分析集中在连接的瓶颈处，我们假设链路始终被充分利用，并且缓冲区中始终存在非零数量的数据包。为了使这个假设在存在基于丢包的CUBIC流时成立，我们还假设缓冲区的大小足够（至少为1个BDP），并且CUBIC流不会遭受任何过早的数据包丢失。</li>
+<li><strong>BBR流始终保持2个BDP的数据包在途中 in-flight</strong>。这个假设符合Ware等人的观察结果[30]，他们表明当BBR与CUBIC竞争时，BBR的拥塞窗口受限。标准的BBR实现的拥塞窗口是其估计的BDP的两倍。为了使这个假设成立，我们考虑的缓冲区至少有1个BDP的大小。</li>
+<li>两个流的数据包在缓冲区中均匀分布。</li>
+<li>BBR流在大部分情况下对丢包不敏感（这对于BBRv1 [4]是成立的）。</li>
+<li><strong>BBR的ProbeRTT阶段期间带宽的降低可以忽略</strong>。我们做出这个假设是因为BBR的ProbeRTT阶段持续时间约为200毫秒，与其持续时间为10秒的ProbeBW阶段相比可以忽略不计。</li>
+<li>所有流具有相同的基础/最小RTT。</li>
+</ol>
+<p>我们使用的模型符号在表1中列出，以供方便参考。</p>
+<p><img src="Table1ModelNotation.png"></p>
+<p><strong>建模吞吐量</strong>。考虑图2中的瓶颈情况。在任何给定的时刻，流的吞吐量将是其in-flight中的字节数除以其往返时间RTT。CUBIC流和BBR流的in-flight字节数将分别是它们各自的缓冲区份额 $b_b$ 和 $b_c$，加上它们在传输线上的数据量。两个流都面临相同的瓶颈排队延迟，因为它们共享相同的瓶颈，我们可以将它们的带宽表示为以下形式</p>
+<script type="math/tex; mode=display">
+\lambda_c=\frac{\lambda_cRTT+b_c}{RTT+Q_d}</script><script type="math/tex; mode=display">
+\lambda_b=\frac{\lambda_bRTT+b_b}{RTT+Q_d}</script><p>但是，因为我们知道当与CUBIC竞争的时候，BBR是要被它的cwnd（上限是 $2\times BDP$）限制的，所以可以将公式6重写为以下，其中 $RTT^+$ 是BBR的最小RTT的高估</p>
+<script type="math/tex; mode=display">
+\lambda_b=\frac{2\lambda_dRTT^+}{RTT+Q_d}</script><p>排队延迟 $Q_d$ 是是两个流在缓冲区中拥有的总字节数除以这些字节被排空的速率（链路容量 $C$）</p>
+<script type="math/tex; mode=display">
+Q_d=\frac{b_b+b_c}{C}</script><p><strong>将 $RTT^+$ 与CUBIC的缓冲区占用率关联起来</strong>。 BBR流会看到挤爆的 RTT，因为在其ProbeRTT阶段，瓶颈缓冲区没有完全排空，仍然存在一些未排空的CUBIC数据包。那么， $RTT^+$ 可以表示为：</p>
+<script type="math/tex; mode=display">
+RTT^+=RTT+\frac{b_{cmin}}{C}</script><p>在这里，$b_{cmin}$ 是CUBIC流在BBR的ProbeRTT阶段缓冲区中的最小数据包数量。我们将假设在CUBIC发生数据包丢失后回退时，它的缓冲区份额为此数量。将方程（7）和（9）合并并简化，我们得到下式。其中，$b_b+b_c$𝑐实际上是平均缓冲区占用量。这是在假设缓冲区大小大于1 BDP（或 𝐶 × 𝑅𝑇𝑇）的情况下成立的。我们可以将这个结果与方程（8）一起使用，将方程（5）重新写成以下形式</p>
+<script type="math/tex; mode=display">
+b_b+b_c=2b_{cmin}+C\cdot RTT</script><script type="math/tex; mode=display">
+\lambda_c=\frac{\lambda_cRTT+b_c}{2RTT+\frac{2b_{cmin}}{C}}</script><p><strong>CUBIC的最小缓冲区占用量</strong>。 $b<em>{cmin}$ 是在CUBIC流在发生数据包丢失后进行回退时达到的。由于我们知道CUBIC在数据包丢失后会回退到其最大缓冲区占用量的0.7倍，我们可以如下计算 $b</em>{cmin}$。这里，$\lambda<em>{cmin}$ 表示CUBIC流在回退期间获得的瓶颈带宽份额，而 $(\lambda</em>{cmin}RTT)$ 表示此回退后管道上的字节数。由于BBR和CUBIC的相关缓冲区份额反映了它们在任何时刻接收到的瓶颈带宽的多少，我们可以将 $\lambda_{cmin}$ 表示为：</p>
+<script type="math/tex; mode=display">
+b_{cmin}=(0.7W_{\max})-(\lambda_{cmin}RTT)</script><script type="math/tex; mode=display">
+\lambda_{cmin}=\frac{b_{cmin}}{b_{cmin}+b_c}C</script><p>为了计算方程（12）中的 $b<em>{cmin}$，我们需要计算竞争CUBIC流的最大窗口大小 $W</em>{\max}$。我们将 $W<em>{max}$ 估计为下式。其中 $b</em>{cmax}$ 仅仅是当CUBIC流填满瓶颈缓冲时的缓冲占用率，$\lambda<em>{cmax}$ 则是CUBIC把 $b</em>{cmax}$ 放入缓冲时分到的带宽</p>
+<script type="math/tex; mode=display">
+W_{\max}=b_{cmax}+\lambda_{cmax}RTT</script><script type="math/tex; mode=display">
+b_{cmax}=B-b_b</script><script type="math/tex; mode=display">
+\lambda_{cmax}=\frac{b_{cmax}}{b_{cmax}+b_b}C</script><p>从公式（13）到（15）的结果俩看，我们可以扩展公式（12）并按如下计算 $b_{cmin}$</p>
+<script type="math/tex; mode=display">
+b_{cmin}+\frac{b_{cmin}}{b_{cmin}+b_b}C\cdot RTT=0.7\times\left(B-b_b+\frac{B-b_b}{B}C\cdot RTT\right)</script><p><strong>将所有内容综合起来</strong>。使用方程（10）的关系，并近似地将 $b_b+b_c$ 表示为 $B$，我们可以将方程（17）写为：</p>
+<script type="math/tex; mode=display">
+\frac{B-C\cdot RTT}{2}+\frac{\frac{B-C\cdot RTT}{2}}{\frac{B-C\cdot RTT}{2}+b_b}C\cdot RTT=0.7\times\left(B-b_b+\frac{B-b_b}{B}C\cdot RTT\right)</script><p>由于 $B,C,RTT$ 都是已知量，我们可以求解方程（18），得到BBR流在与另一个CUBIC流竞争时的缓冲区占用情况。然后，将该 $b_b$ 值代入方程（11）的简化版本，解出 $\lambda_c$ 和 $\lambda_b$：</p>
+<script type="math/tex; mode=display">
+\lambda_c\left(RTT+\frac{2b_{cmin}}{C}\right)=2b_{cmin}+C\cdot RTT-B_b</script><script type="math/tex; mode=display">
+\lambda_b=C-\lambda_c</script><h3 id="Modelling-Multiple-Flows"><a href="#Modelling-Multiple-Flows" class="headerlink" title="Modelling Multiple Flows"></a>Modelling Multiple Flows</h3><p>对于具有多个具有相同RTT的CUBIC和BBR流的网络，我们可以得出以下观察结论：</p>
+<ol>
+<li>首先，在§2.3中描述的2流模型只需要考虑CUBIC流的最大和最小缓冲区占用情况。因此，对于具有总共 $N$ 个流的瓶颈，其中有 $N_c$ 个是CUBIC流和 $N_b$ 个是BBR流，我们可以将所有CUBIC流建模为一个聚合CUBIC流，其组合带宽为 $\hat{\lambda}_c$。</li>
+<li>同样地，我们将所有的BBR流建模为另一个聚合BBR流，其带宽为 $\hat{\lambda}_b$。这是因为我们假设当所有参与的BBR流都受到拥塞窗口限制时，聚合BBR流的行为与单个BBR流的行为几乎相同。这是因为我们预期在与其他CUBIC流竞争时，BBR流将保持同步，并且由于具有类似的RTT，它们之间将彼此公平对待[4]。</li>
+<li>接下来，尽管 $\hat{b}<em>{cmax}$ 保持基本不变（因为CUBIC流始终尝试填充缓冲区，无论是一个流还是多个流），但聚合CUBIC流的 $\hat{b}</em>{cmin}$ 可以有所变化。这是因为在多个流的情况下，根据竞争流的丢包模式和起始时间，它们之间的同步水平可能会有所不同。我们分别考虑最大和最小的同步水平。</li>
+</ol>
+<p>换句话说，为了对具有多个CUBIC和BBR流的网络进行建模，我们使用在第2.3节中描述的相同模型，但分别用 $\hat{\lambda}_b$ 和 $\hat{\lambda}_c$ 替换 $\lambda_b$ 和 $\lambda_c$。唯一的关键区别是，我们不再使用方程（12），而是考虑两种边界情况：</p>
+<ol>
+<li><p><strong>CUBIC同步</strong>。如果所有CUBIC流都是同步的，则 $\hat{b}_{cmin}$ 的下界可以由以下公式给出：</p>
+<script type="math/tex; mode=display">
+\hat{b}_{cmin}=\left(0.7\hat{W}_{max}\right)-\left(\hat{\lambda}_{cmin}RTT\right)</script></li>
+<li><p><strong>CUBIC非同步</strong>。另一方面，如果在任何时候只有一个CUBIC流进行退避，即所有流完全不同步，那么 $\hat{b}_{cmin}$ 的上界可以由以下公式给出</p>
+<script type="math/tex; mode=display">
+\hat{b}_{cmin}=\left(\frac{\left(N_c-0.3\right)}{N_c}\hat{W}_{\max}\right)-\left(\hat{\lambda}_{cmin}RTT\right)</script></li>
+</ol>
+<blockquote>
+<p>译者注：当多个使用 CUBIC 的网络流量呈现同步特征时，意味着它们在行为上具有协调性。这种同步可能发生在多个流量具有相似的往返时间（RTT）或在网络中相似的拥塞点遇到拥塞时。</p>
+<p>同步的 CUBIC 流量既可以对网络性能产生积极影响，也可能带来负面影响。积极方面是，同步可以提高网络利用率和增加吞吐量，因为流量可以协同调整发送速率。然而，过度的同步也可能导致拥塞崩溃，即所有流量同时减小发送速率，导致整体吞吐量下降和资源分配低效。</p>
+</blockquote>
+<p>解决这两种情况的模型将为我们提供BBR和CUBIC流的带宽份额的良好估计。在实践中，我们发现经验结果通常更接近于CUBIC流同步的情况（即方程（21））。可以通过以下方式获得各个流的平均带宽：</p>
+<script type="math/tex; mode=display">
+\lambda_c=\frac{\hat{\lambda}_c}{N_c}</script><script type="math/tex; mode=display">
+\lambda_b=\frac{\hat{\lambda}_b}{N_b}</script><h2 id="MODEL-VALIDATION"><a href="#MODEL-VALIDATION" class="headerlink" title="MODEL VALIDATION"></a><em>MODEL VALIDATION</em></h2><p>在本节中，我们使用真实实验来验证我们在第2.3节和第2.4节中的模型。由于我们模型中的所有流具有相同的RTT，我们在本节的图表中将缓冲区大小标准化为BDP，以便在不同的网络条件下进行比较。</p>
+<h3 id="Basic-2-Flow-Model-1"><a href="#Basic-2-Flow-Model-1" class="headerlink" title="Basic 2-Flow Model"></a>Basic 2-Flow Model</h3><p>我们首先评估了我们简单模型的准确性，该模型可以预测两个竞争的CUBIC和BBR流的带宽份额。为此，我们通过一个50 Mbps的瓶颈链路发起了一个CUBIC流和一个BBR流。缓冲区大小从1个BDP逐步增加到30个BDP，步长为0.5个BDP。我们还在一个100 Mbps的瓶颈链路上重复了相同的实验。</p>
+<p>在图3中，我们绘制了BBR流的观察到的吞吐量份额与缓冲区大小的关系，并将其与Ware等人的预测值进行了比较。在大范围的缓冲区大小内，我们的模型可以在实际值的5%误差范围内预测BBR流与CUBIC流竞争时的吞吐量。相比之下，Ware等人的模型误差至少为30%，而且这还是在较浅的缓冲区中。正如在第2.2节中讨论的，这是因为他们做出的假设在浅到中等大小的瓶颈缓冲区中是不成立的。</p>
+<p>从图3中的一个有趣观察是，我们模型和Ware等人的模型的预测在不同的链路速度和RTT上相对稳定，即其他链路速度和RTT的图表具有相似的形状和误差。</p>
+<h3 id="Multiple-Flows"><a href="#Multiple-Flows" class="headerlink" title="Multiple Flows"></a>Multiple Flows</h3><p>为了评估我们针对多个流的模型的准确性，我们通过一个100 Mbps的瓶颈链路启动了10个流（5个CUBIC流和5个BBR流），所有流的base RTT为40毫秒。缓冲区大小从1个BDP逐步增加到30个BDP，步长为1个BDP。我们还通过20个流（10个CUBIC流和10个BBR流）重复了相同的实验。所有这些实验中的流同时启动，并持续2分钟。</p>
+<p>在图4中，我们绘制了每个流的平均吞吐量与我们的多流模型预测的置信区间之间的关系。从我们的结果中可以看出，BBR的每个流的平均吞吐量落在我们模型预测的置信区间内。事实上，我们发现测量的每个流的平均吞吐量非常接近CUBIC流的非同步边界。我们检查了实验的跟踪记录，并验证了在这些实验中CUBIC流通常不会同步。值得注意的是，虽然看起来Ware等人的模型在更深的缓冲区中与我们的模型的“同步”边界相匹配，但这并不是因为他们的模型假设竞争的CUBIC流完全同步。实际上，他们假设竞争的基于丢包的流的缓冲区占用根本不变-因此，CUBIC流是否同步对他们模型的假设没有任何影响。</p>
+<h3 id="Varying-the-Proportion-of-Flows"><a href="#Varying-the-Proportion-of-Flows" class="headerlink" title="Varying the Proportion of Flows"></a>Varying the Proportion of Flows</h3><p>为了了解互联网拥塞控制领域的演变，我们还需要了解在瓶颈中运行BBR流的比例增加时，BBR的平均每个流的带宽份额会如何变化。</p>
+<p>为此，我们通过一个100 Mbps的瓶颈链路启动了10个流，缓冲区大小为3个和10个BDP。每个流要么是CUBIC，要么是BBR。在多次运行中，我们增加了运行BBR流的比例，并测量了BBR流在2分钟内实现的平均带宽。所有流都同时启动。然后对20个流进行了相同的实验重复。</p>
+<p>在图5中，我们绘制了每个流的平均吞吐量与BBR流的数量（10个或20个）之间的关系。我们可以看到，测量的平均每个流的吞吐量确实落在我们多流模型预测的上下界内。我们注意到，在某些情况下，测量值更接近CUBIC流同步的边界，而在其他情况下，则更接近非同步的边界。同样，我们检查了实验的跟踪记录，并验证了CUBIC流的行为确实与实验中更接近的线相对应。</p>
+<p>这些实验中最重要的发现是，随着在瓶颈中运行BBR的流比例增加，BBR的平均每个流带宽减少。这表明随着越来越多的互联网用户开始使用BBR作为其拥塞控制算法，目前BBR相对于CUBIC所享有的吞吐量优势将减小。在某个阶段，BBR的平均吞吐量可能会低于CUBIC！我们将在第4节中利用这一观察结果，证明当具有相同基本RTT的多个流在共享瓶颈链路上竞争时，CUBIC和BBR必须存在纳什均衡分布。这一趋势还表明，随着更多的BBR流加入瓶颈，它们的集体缓冲区占用仅呈次线性增加。</p>
+<h2 id="APPLYING-GAME-THEORY"><a href="#APPLYING-GAME-THEORY" class="headerlink" title="APPLYING GAME THEORY"></a><em>APPLYING GAME THEORY</em></h2><p>在本节中，我们使用第2.4节中的模型应用博弈论来预测互联网在不久的将来可能的发展。</p>
+<p>性能是多方面的，并且与上下文相关。为了简化起见，我们将重点放在吞吐量上，<strong>并假设流量将选择提供最高吞吐量的拥塞控制算法</strong>，因为改善吞吐量通常被认为是切换拥塞控制算法的原因之一[5, 7, 16]。</p>
+<p>我们将用户（网站）建模为当前选择CUBIC或BBR作为拥塞控制（CC）算法的代理。如果用户切换到另一种拥塞控制算法可以获得更高的吞吐量，那么就会有动机进行切换。当用户没有任何动机切换时，CUBIC和BBR流的Nash均衡（NE）分布就会出现，要么是因为切换不会导致吞吐量增加，要么是因为切换会导致吞吐量降低。</p>
+<p><strong>我们证明了在具有类似RTT的流在瓶颈处竞争时，必然存在Nash均衡，并讨论了这种分析如何适用于具有其他（非BBR）拥塞控制算法和更复杂效用函数的更复杂情况。对于具有不同RTT的流的网络仍然是未来的研究内容。</strong></p>
+<h3 id="NE-for-flows-with-similar-RTTs"><a href="#NE-for-flows-with-similar-RTTs" class="headerlink" title="NE for flows with similar RTTs"></a>NE for flows with similar RTTs</h3><p>考虑一个具有 𝑛 条流的网络，它们共享一个瓶颈，每条流都使用CUBIC或BBR作为其拥塞控制算法。在这个网络中，我们认为若没有任何流有动机从CUBIC切换到BBR或相反以实现更好的性能，则此时CUBIC和BBR流的给定分布为Nash均衡（NE）</p>
+<p>由于所有的流具有相同的RTT且本质上对称，对于 $n$ 条流而言，共有 $n+1$ 种可能的分布。对于这些分布中的每一个，我们可以测量所有BBR流接收的平均瓶颈带宽，并在图中绘制出来，如图6所示。图中的虚线代表公平份额线，即BBR流的平均带宽等于公平份额带宽（即链路容量除以总流量数）。</p>
+<p><strong>观察到当少数BBR流与大量CUBIC流竞争时，它们能够获得不成比例的大份额的瓶颈带宽[30]。</strong>根据这个结果，我们知道在图6中存在一个分布（具有少量BBR流）位于公平份额线上方，我们将其标记为A。我们还知道当瓶颈处的所有流都运行BBR时，它们将占用所有的瓶颈带宽。BBR流的平均带宽将符合公平份额带宽的定义。我们可以利用这个观察结果在图6中绘制点B。我们预期在这两个分布之间的所有分布都位于连接点A和点B的一条直线上。</p>
+<p>接下来，我们考虑沿着从A到B的直线的分布。有两种可能性：（i）要么线段AB始终位于公平份额线上方，或者（ii）线段AB在某个点C与公平份额线相交。我们注意到对于在公平份额线上方的点，BBR流的平均吞吐量将更高；对于在该线下方的点，CUBIC流的平均吞吐量将更高。这也意味着对于在公平份额线上方的点，某些CUBIC流将有动机切换到BBR；而对于在公平份额线下方的点，则相反。</p>
+<p><strong>情况1：AB在公平份额线上方</strong>。在A和B之间的任意点，都会有某个CUBIC流受到切换到BBR的激励。随着越来越多的流从CUBIC切换到BBR，我们沿着AB线移动，直到达到B。点B，其中所有的流都是BBR，就是Nash均衡分布。这是因为没有流有切换到CUBIC的动机，因为这会导致吞吐量的损失。</p>
+<p><strong>情况2：AB在公平份额线上的点C相交</strong>。我们声称C是一个Nash均衡分布。为了理解这一点，我们可以放大并观察在C处发生的情况（图6）。有两种可能性：</p>
+<ol>
+<li>一个CUBIC流可以切换到BBR。这将对应于网络的当前状态移动到C的右侧。这意味着BBR流的平均吞吐量将低于CUBIC流的平均吞吐量。因此，CUBIC流永远不会切换到BBR。</li>
+<li>一个BBR流可以切换到CUBIC。另一方面，BBR流切换到CUBIC将使网络的当前状态移动到C的左侧，这将导致CUBIC流的平均吞吐量低于BBR流的平均吞吐量。因此，这个切换也是不可行的。</li>
+</ol>
+<p>由于无法向左或向右移动，点C是一个稳定的Nash均衡分布。</p>
+<p>估计Nash均衡分布。根据§2.4中的观察，当所有BBR流的总带宽与公平份额线相交时，存在Nash均衡分布。换句话说，Nash均衡分布是使得𝑁𝑏满足以下条件的值：</p>
+<script type="math/tex; mode=display">
+\lambda_b=\frac{\hat{\lambda}_b}{N_b}=\frac{C}{N}</script><p>我们可以使用我们的吞吐量模型中的方程（25），结合方程（20）和（24），来预测具有相同基本RTT的所有流的固定容量网络中CUBIC和BBR的Nash均衡分布。</p>
+<h3 id="Other-Congestion-Control-Algorithms"><a href="#Other-Congestion-Control-Algorithms" class="headerlink" title="Other Congestion Control Algorithms"></a>Other Congestion Control Algorithms</h3><p>在4.1节中，CUBIC和BBR的结果基于以下两个假设： (i) BBR能够至少在一个分布中获取不成比例的大份额瓶颈带宽；和 (ii) 当所有流程均为BBR时，BBR流程将占用可用的瓶颈带宽。如果我们将BBR替换为另一个拥塞控制算法，后者是不言自明的。如果我们能够证明对于另一个拥塞控制算法X，前者的性质也是成立的，那么当具有相似RTT的流程在瓶颈处竞争时，CUBIC和X流程的NE分布也必定存在。</p>
+<p>为了验证前者的性质是否适用于以下在BBR之后提出的拥塞控制算法：(i) BBRv2 [6]，(ii) Copa [3]和(iii) PCC Vivace [10]，我们在具有100 Mbps瓶颈和每个算法X的2 BDP瓶颈缓冲区的网络中启动了一个包含10个流程的实验。该网络中的所有流程均为CUBIC或X。我们测量了所有11种可能的CUBIC和X流程分布的每个流程的平均吞吐量。</p>
+<p>我们在图7中绘制了平均每个流程的吞吐量与非CUBIC (X)流程数量的关系。我们发现，PCC-Vivace [10]，BBR [4]和BBRv2 [6]能够在流程较少时获取不成比例的大份额瓶颈带宽。另一方面，Copa [3]对于所有的拥塞控制算法分布都获得较低的平均吞吐量。因此，我们预期BBRv2和PCC Vivace也存在Nash均衡分布，但Copa可能不存在。</p>
+<p>我们需要注意的是，我们的结果仅适用于两个竞争算法在公共瓶颈处竞争的情况。<strong>多个拥塞控制算法在公共瓶颈处竞争的情景仍然需要进一步研究。</strong></p>
+<h3 id="Complex-Utility-Functions"><a href="#Complex-Utility-Functions" class="headerlink" title="Complex Utility Functions"></a>Complex Utility Functions</h3><p>在现实世界中，发送方很可能不仅关注吞吐量，还关注延迟。对于视频流媒体而言，重要的度量指标将变得更加复杂。然而，我们认为即使在这种情况下，吞吐量仍然很可能是驱使发送方在CUBIC和BBR之间切换的度量标准。</p>
+<p>为了说明这一点，我们在第4.2节中讨论的一个包含10个流程的演化实验中绘制了每个算法的平均吞吐量和平均排队延迟。这个实验中的10个流程通过一个100 Mbps的瓶颈链路，具有2个BDP的缓冲区和40毫秒的基本往返时延。图8a中的两条线表示每个试验中CUBIC和BBR流程接收的平均吞吐量。图8b中的单条线表示平均排队延迟，这是所有流程共享的度量标准，与它们在该试验中运行的拥塞控制算法无关。这些图表说明了尽管吞吐量和延迟都依赖于瓶颈处的拥塞控制算法分布，但吞吐量很可能是唯一足够不对称的度量标准，从而推动流程在CUBIC和BBR之间切换。对于关注排队延迟的流程来说，CUBIC和BBR之间的切换可能只会带来边际的效用增益（因为从图8b可以明显看出，增加BBR流程的比例对排队延迟几乎没有任何影响，除非所有流程都是BBR）。</p>
+<p>因此，我们推测在简单的线性组合吞吐量和延迟的效用函数下，仍然存在Nash均衡分布。这是因为我们预期在这种情况下，选择不同拥塞控制算法的决策仍然主要受到吞吐量增益的影响。然而，目前尚不清楚在所有参与流程具有截然不同的效用函数的情况下，流程将如何反应。<strong>探索复杂效用函数下Nash均衡是否存在以及分布的特征仍然是未来的研究方向。</strong></p>
+<h3 id="Experimental-Verification"><a href="#Experimental-Verification" class="headerlink" title="Experimental Verification"></a>Experimental Verification</h3><p>在这个部分，我们介绍了我们的实验测试来验证第4.1节中预测的NE分布的准确性。</p>
+<p><strong>Methodology</strong>：对于每个网络设置，我们运行了10个试验，包括所有n+1种可能的组合，其中n个发送者运行CUBIC或BBR。在每个试验中，发送者发送数据持续2分钟，并记录它们的平均每流吞吐量。为了确定NE，我们列举所有组合，并检查是否存在任何组合，其中没有任何一个流能够通过切换到另一种TCP变体（其他流保持不变）而获得更高的吞吐量。通常会有多个分布满足这个条件。</p>
+<p><strong>找到的Nash Equilibria</strong>：我们在图9中绘制了在50个竞争流中找到的NE的结果。瓶颈带宽分别设置为100 Mbps和50 Mbps，缓冲区大小在0.5到BDP的50倍之间变化。所有这些流都具有相同的基本RTT，分别为20 ms、40 ms和80 ms。实际找到的所有NE都在我们模型预测的区间内，<strong>除了在较大的BDP时的情况。在这些区域，BBR不受拥塞窗口限制</strong>，因此我们的模型效果不好，这解释了为什么实际的NE与我们的预测不符。</p>
+<p>除了在较深的缓冲区中NE通常有更多的CUBIC流量的趋势之外，图9的结果还展示了另外两个有趣的趋势。第一个趋势是我们发现同一实验的不同迭代之间存在多个NE。这是因为在Nash Equilibrium分布附近，CUBIC和BBR之间的切换所带来的吞吐量增益是微小的。因此，在试验中的任何随机性都可能导致NE向相邻的分布移动。我们观察到这种现象，即在多个试验中存在多个NE分布。</p>
+<p>另一个趋势是当缓冲区大小按BDP归一化时，无论base RTT或瓶颈链路容量如何，预测的模型区域完全相同。这在图9中是明显的，我们测试的六种不同网络设置中的预测区域具有完全相同的形状。经验观察到的NE也遵循这个趋势，在具有不同基本RTT和链路速度的实验中，所有NE大致沿着相同的曲线走。这表明NE的位置不单独取决于链路容量 $C$ 或 $RTT$，而是取决于BDP。这是有道理的，因为在第2节中影响竞争的BBR和CUBIC流量获得的带宽的关键指标是BBR在缓冲区中保留的额外数据包数量，而这取决于BDP（𝐶×𝑅𝑇𝑇）。当我们对25个流的瓶颈进行重复实验时，我们也观察到类似的趋势。</p>
+<h3 id="Flows-with-different-RTTs"><a href="#Flows-with-different-RTTs" class="headerlink" title="Flows with different RTTs"></a>Flows with different RTTs</h3><p>虽然我们的模型假设所有流的RTT相似，但互联网上的RTT分布可能非常多样化[26]。尽管我们的模型不容易扩展到多个RTT的情况，但我们进行了实验来研究具有不同RTT的流的NE。具体而言，我们同时启动了30个流，其中包括三组10个流，它们的RTT分别为10毫秒、30毫秒和50毫秒。这些流共享一个带宽为100 Mbps的瓶颈链路，缓冲区大小以最短RTT流的BDP（带宽时延乘积）的倍数变化。我们对这30个流的所有 $2n$ 种可能的CUBIC和BBR流组合进行了三次试验，然后像之前的实验一样计算了Nash Equilibrium分布。这个实验的目的不是定量验证我们模型的预测，而是验证CUBIC和BBR在多RTT网络中也可以存在Nash Equilibrium分布。我们在图10中绘制了结果。我们注意到不同RTT流之间NE的两个关键趋势：</p>
+<ol>
+<li><strong>NE的存在</strong>。对于测试的所有缓冲区大小，我们能够找到至少一种CUBIC和BBR流的Nash Equilibrium分布。在许多情况下，不同试验中存在多个NE分布，但所有这些分布大致上都有相同比例的CUBIC流量。</li>
+<li><strong>NE的性质</strong>。在所有的Nash Equilibrium分布中，所有选择运行CUBIC的流都是具有最短RTT的流。换句话说，如果一个Nash Equilibrium分布中有30个流中的15个运行CUBIC，那么这15个流将包括所有10个RTT为10毫秒的流，以及5个RTT为30毫秒的流。</li>
+</ol>
+<p>我们的结果表明，<strong>具有较大RTT的流通过切换到BBR获益更多，而较短RTT的流则相反</strong>。这符合我们对CUBIC和BBR的RTT公平性的理解。基于丢包的拥塞控制算法（如CUBIC）通常更偏向于具有较短RTT的流[18]，因为具有较短RTT的流能够更快地获得反馈并更频繁地探测带宽。对于BBR，情况则相反，即<strong>具有较大RTT的流获得的瓶颈带宽份额比具有较小RTT的流更大[14]，因为BBR流受到拥塞窗口限制，并且保持与其RTT成正比的缓冲区份额</strong>。当具有不同RTT的CUBIC和BBR流进行竞争时，这两种相反的趋势自然会相互补充，产生具有较短RTT CUBIC流和较长RTT BBR流的NE分布。</p>
+<h3 id="BBR-Predictions-applied-to-BBRv2"><a href="#BBR-Predictions-applied-to-BBRv2" class="headerlink" title="BBR Predictions applied to BBRv2"></a>BBR Predictions applied to BBRv2</h3><p>谷歌正在努力在不久的将来将BBR替换为BBRv2 [6]。研究发现，BBR在较小的缓冲区中对CUBIC流不公平，并且无论流的份额如何，它可以占据瓶颈处的可用带宽的多达一半[30]。为了解决这个问题，BBRv2被设计为BBR的较温和的替代方案。从高层次上看，BBRv2的行为类似于BBR，但由于它具有可变的拥塞窗口，它能够对数据包丢失做出反应。我们重复了§4.4中对BBRv2的实验，以确定是否存在Nash Equilibrium分布，如果存在，它们与我们对BBR的预测相比如何。</p>
+<p>我们在图11中的结果表明，当CUBIC和BBRv2流在一个共同的瓶颈处竞争时，也存在多个Nash Equilibrium。这与我们在§4.2中的观察一致。因为BBRv2比BBR更温和，所以对于相同的缓冲区大小，BBRv2的Nash Equilibrium通常具有更高比例的CUBIC流量（参见图7）。我们的结果还表明，在RTT相对较小的情况下，我们目前对BBR的模型对于BBRv2也有效。改进模型以提高对BBRv2的吞吐量预测仍然是未来的工作。</p>
+<h2 id="DISCUSSION"><a href="#DISCUSSION" class="headerlink" title="DISCUSSION"></a><em>DISCUSSION</em></h2><p><strong>具有不同RTT的网络的Nash均衡</strong>。先前观察到在竞争的CUBIC和BBR流具有不同基本RTT的设置中存在Nash均衡[21]。然而，我们模型的一个限制是，本文中所提出的分析不适用于具有不同RTT的流的网络。这是因为对于不同的RTT，流将不再对称，并且具有所有可能分布的状态空间将以指数增长。我们在§4.1中的证明要求我们将所有可能的CCA分布的状态空间线性化，以满足§4.2中讨论的两个条件。我们尚未找到一种方法来处理具有不同基本RTT的流的网络。虽然我们有一些结果表明具有不同RTT的网络通常存在Nash均衡（参见§4.5），但我们尚未能够将§4.1中的证明扩展到这种情况。</p>
+<p><strong>对互联网缓冲区大小的影响</strong>。路由器缓冲区大小是一个长期存在的问题[2, 11, 19]。多年来，人们已经总结出一些经验法则，并且趋势已经转向“微小”缓冲区[11]，以避免缓冲区膨胀[12]。然而，鉴于BBR保持2×BDP的数据包在传输中，如果BBR成为互联网上主导的TCP变体，CUBIC流可能面临饥饿。</p>
+<p><strong>大流量模型的性能</strong>。虽然我们的实验验证了我们的模型可以处理多达50个并发流的情况，但50仍然比互联网上通过瓶颈链路的并发流的数量小得多。我们还需要观察我们的预测如何适用于互联网。然而，我们没有理由相信，从定性的角度来看，我们的预测不适用于具有数百个并发流的较大网络。</p>
+<p><strong>更多样化的工作负载和更复杂的指标</strong>。我们模型评估中的一个缺点是我们只对长流进行了实验。实际的互联网工作负载更加多样化，不仅包括长流，还包括大块的视频流量、广告服务生成的短流和来自实时流媒体和视频通话的延迟敏感流量。不同的应用流量可能关心比吞吐量更复杂的指标。同时，数学模型（用于模拟CUBIC和BBR的稳定状态行为）很可能无法准确复制短流之间的交互作用。改进我们的模型和评估以处理更多样化和更实际的工作负载仍然是未来的工作。</p>
+<p><strong>CUBIC流之间的强制同步</strong>。我们观察到实际的带宽份额通常更接近于我们模型中的CUBIC-Synched界限的NE发现（参见图5）。这表明对于多个竞争的CUBIC和BBR流，CUBIC流可以被同步。我们认为这很可能是因为当所有BBR流从ProbeRTT过渡到ProbeBW时（一起过渡），它们共同向缓冲区添加了许多数据包，导致缓冲区溢出，并且大多数CUBIC流在同一时间经历数据包丢失，从而同步起来。</p>
+<p><strong>在超深缓冲区中的性能较差</strong>。我们不希望在非常深的缓冲区（超过BDP的100倍）中应用§2中描述的模型。这是因为在这种缓冲区中，BBR并不总是受拥塞窗口限制。当BBR退出ProbeRTT阶段时，它开始保持仅有1个BDP的数据包在传输中。然而，随着流在其周期性的ProbeBW周期中获得越来越多的带宽，它的传输中的数据包数量慢慢增长，直到被拥塞窗口限制。由于这些ProbeBW周期每8个RTT发生一次，并且在深缓冲区中，这些RTT要比浅缓冲区中的RTT大得多，BBR的拥塞窗口限制速率要慢得多[30]。因此，我们的模型将始终高估BBR在深缓冲区中与CUBIC流竞争时的性能。</p>
+<p>为了证明这一点，我们进行了一个简单的实验，一个CUBIC流与一个BBR流在基本RTT为40毫秒的50 Mbps下进行竞争。然后，我们绘制了BBR流在缓冲区大小从1个BDP增加到250倍BDP的情况下接收的带宽。从图12中可以看出，在超深缓冲区中，我们的模型过高估计了BBR的平均吞吐量。当缓冲区深度超过BDP的100倍时，实际吞吐量将低于我们模型的预测值。我们在这些实验中验证了在这些缓冲区范围内BBR流不受拥塞窗口限制。</p>
+<p><strong>2 BDP数据包在传输中的假设</strong>。我们在§2中的模型假设BBR流始终保持2个BDP的数据包在传输中。实际上，数据包的实际数量将在1个BDP和2个BDP之间变化，因为每个ProbeBW阶段都以大约1个BDP的数据包开始。随着ProbeBW阶段的进行，对最小RTT的过高估计会导致BBR增加传输中的数据包数量，增长速率取决于RTT。对于较高的RTT值，10秒ProbeBW阶段中带宽探测的次数将较小，因此传输中的平均数据包数量将更接近于1个BDP。我们假设传输中有2个BDP的数据包，以在保持模型简单的同时实现较好的准确性。然而，可能可以通过更准确地估计ProbeBW阶段中传输中的数据包数量来改进我们的模型。</p>
+<p><strong>与其他拥塞算法的兼容性</strong>。鉴于我们找到的大多数Nash均衡分布是CUBIC和BBR的混合分布，很可能这两种算法将在可预见的将来在互联网上共存。因此，我们需要致力于解决与不仅仅是一类拥塞控制算法，而是多种算法，可能还包括其他TCP变体[20]一起工作的网络解决方案。</p>
+<p><strong>切换到更好的拥塞控制的激励机制</strong>。我们发现在大多数缓冲区大小下，我们可以看到混合分布的Nash均衡，这表明在与现有流量保持良好的关系的同时，可能很难激励切换到更好的拥塞控制。回顾过去，CUBIC在高BDP网络路径上明显优于New Reno[23]。因此，CUBIC能够在很大程度上取代New Reno的原因之一是它更具攻击性，并且对现有的Reno流量不太友好，因此关心吞吐量的运营商几乎没有选择而必须切换。展望未来，BBR与CUBIC之间的情况要复杂得多。虽然BBR能够在只有少数流量时实现更好的吞吐量，但随着BBR流的比例增加，BBR相对于CUBIC的优势将减弱。因此，在选择BBR而不是CUBIC方面的激励可能与选择CUBIC而不是New Reno的激励有很大不同。</p>
+<h2 id="RELATED-WORK"><a href="#RELATED-WORK" class="headerlink" title="RELATED WORK"></a><em>RELATED WORK</em></h2><p>自2016年引入BBR以来，已经有许多研究致力于探索BBR的特性。Hock等人进行了第一项独立研究，以了解BBR与CUBIC流之间的相互作用。他们观察到在小于1BDP的浅缓冲区中，BBR流占据了与竞争的CUBIC流相比更大的带宽份额。他们认为BBR的带宽探测导致了缓冲区溢出和突发性丢包，进而导致CUBIC减少其cwnd，从而让BBR占据更大的带宽份额。这种循环随着每次带宽探测而持续，导致CUBIC饥饿状态。其他研究也证实了这一观察结果。Scholz等人进行了多达10个BBR流与10个CUBIC流竞争的实验，并显示BBR流始终能够占据至少总带宽的35%。Dong等人也观察到当单个BBR流与不断增加的CUBIC流竞争时，BBR的带宽份额保持不变。</p>
+<p>据我们所知，并且在第2.2节中所述，目前关于CUBIC和BBR之间相互作用的最佳状态是由Ware等人提出的模型。Ware等人证明了在深缓冲区中，BBR的性能由其cwnd控制。他们声称在非常深的缓冲区中，BBR流总共占据了固定的瓶颈缓冲区份额。然而，这些假设并不准确，因此他们的模型在大范围的缓冲区大小上并不准确。我们的模型则不做任何这些假设。</p>
+<p>我们的模型建立在我们早前的工作基础上，我们展示了在两个流的情况下，CUBIC和BBR流之间必然存在一个纳什均衡分布。我们早前的实验表明，CUBIC和BBR流的份额在纳什均衡点主要取决于缓冲区的大小。而其他网络参数，如瓶颈带宽和流的数量，对纳什均衡分布的影响较小。我们的新模型证明了一个假设，即在所有流具有相同基准RTT的情况下，CUBIC和BBR流之间必然存在纳什均衡。尽管我们的经验似乎表明即使在具有不同RTT的流之间也会存在纳什均衡，但这个假设是否成立仍然是一个未解决的问题。</p>
+<p>博弈论之前也被应用于拥塞控制的研究中，尽管在不同的设置和背景下。Chien和Sinclair是第一批研究修改后的AIMD拥塞控制算法之间相互作用并评估其纳什均衡带宽分布效率的人 [8]。他们表明在drop-tail缓冲区中，Reno和Tahoe流之间的纳什均衡可能是有效的，而在启用RED的缓冲区中可能是低效的。他们的工作与我们的主要区别在于他们为玩家（单个流）提供了固定的策略（拥塞控制算法），Chien和Sinclair试图计算纳什均衡带宽分布，而我们专注于根据拥塞控制算法的分布来预测纳什均衡。在另外两项工作中[1, 28]，重点是研究两个运行Reno和Vegas的流之间的纳什均衡带宽分布。</p>
+<h2 id="CONCLUSION"><a href="#CONCLUSION" class="headerlink" title="CONCLUSION"></a><em>CONCLUSION</em></h2><p>在本文中，我们展示了随着BBR流的比例增加，BBR在吞吐量优势上递减的现象。随着BBR流越来越多，每个BBR流的平均带宽将下降。这种动态表明，在大多数实际网络场景中，很可能总会存在一种CUBIC和BBR流的纳什均衡分布，其中没有流有任何切换的动机。因此，我们大胆预测，在不久的将来，BBR不太可能完全取代互联网上的CUBIC流。即使BBR（或BBRv2）继续增长并占主导地位，我们相信一些流在今后一段时间内仍然会采用CUBIC。</p>
+<h2 id="ACKNOWLEDGEMENTS"><a href="#ACKNOWLEDGEMENTS" class="headerlink" title="ACKNOWLEDGEMENTS"></a><em>ACKNOWLEDGEMENTS</em></h2><p>我们要感谢匿名审稿人、Ali Razeen和我们的指导老师Srikanth Sundaresan提供的宝贵意见。本研究得到了新加坡教育部T1 251RES1917项目的支持。</p>
+<h2 id="REFERENCES"><a href="#REFERENCES" class="headerlink" title="REFERENCES"></a><em>REFERENCES</em></h2><p>[1] Aditya Akella, Srinivasan Seshan, Richard Karp, Scott Shenker, and Christos Papadimitriou. 2002. Selfish behavior and stability of the Internet: A gametheoretic analysis of TCP. ACM SIGCOMM CCR 32, 4 (2002).</p>
+<p>[2] Guido Appenzeller, Isaac Keslassy, and Nick McKeown. 2004. Sizing Router Buffers. In Proceedings of SIGCOMM.</p>
+<p>[3] Venkat Arun and Hari Balakrishnan. 2018. Copa: Practical Delay-Based Congestion Control for the Internet. In Proceedings of NSDI.</p>
+<p>[4] Neal Cardwell, Yuchung Cheng, C Stephen Gunn, Soheil Hassas Yeganeh, and Van Jacobson. 2017. BBR: congestion-based congestion control. Commun. ACM 60, 2 (2017), 58–66.</p>
+<p>[5] Neal Cardwell, Yuchung Cheng, C. Stephen Gunn, Soheil Hassas Yeganeh, Van Jacobson, and Amin Vahdat. 2017. TCP BBR congestion control comes to GCP –your Internet just got faster. <a href="https://tinyurl.com/yc7bd9jk">https://tinyurl.com/yc7bd9jk</a></p>
+<p>[6] Neal Cardwell, Yuchung Cheng, Soheil Hassas Yeganeh, Ian Swett, Victor Vasiliev, Priyaranjan Jha, Yousuk Seung, Matt Mathis, and Van Jacobson. 2019. BBR v2 A Model-based Congestion Control. <a href="https://datatracker.ietf.org/meeting/104/materials/slides-104-iccrg-an-update-on-bbr-00">https://datatracker.ietf.org/meeting/104/materials/slides-104-iccrg-an-update-on-bbr-00</a></p>
+<p>[7] Erik Carlsson and Eirini Kakogianni. 2018. Smoother Streaming with BBR. <a href="https://tinyurl.com/yyt5tbhd">https://tinyurl.com/yyt5tbhd</a></p>
+<p>[8] Steve Chien and Alistair Sinclair. 2007. Convergence to Approximate Nash Equilibria in Congestion Games. In Proceedings of SODA.</p>
+<p>[9] Dah-Ming Chiu and Raj Jain. 1989. Analysis of the increase and decrease algorithms for congestion avoidance in computer networks. Computer Networks and ISDN systems 17, 1 (1989), 1–14.</p>
+<p>[10] Mo Dong, TongMeng, Doron Zarchy, Engin Arslan, Yossi Gilad, Brighten Godfrey, and Michael Schapira. 2018. PCC Vivace: Online-Learning Congestion Control. In Proceedings of NSDI.</p>
+<p>[11] Mihaela Enachescu, Yashar Ganjali, Ashish Goel, Nick McKeown, and Tim Roughgarden. 2006. Routers with Very Small Buffers. In Proceedings of INFOCOM.</p>
+<p>[12] Jim Gettys. 2011. Bufferbloat: Dark buffers in the internet. IEEE Internet Computing 15, 3 (2011), 96–96.</p>
+<p>[13] Sangtae Ha, Injong Rhee, and Lisong Xu. 2008. CUBIC: a new TCP-friendly high-speed TCP variant. ACM SIGOPS Operating Systems Review 42, 5 (2008), 64–74.</p>
+<p>[14] Mario Hock, Roland Bless, and Martina Zitterbart. 2017. Experimental Evaluation of BBR Congestion Control. In Proceedings of ICNP.</p>
+<p>[15] Mario Hock, Roland Bless, and Martina Zitterbart. 2017. Experimental Evaluation of BBR Congestion Control. In Proceedings of ICNP.</p>
+<p>[16] Alexey Ivanov. 2019. Evaluating BBRv2 on the Dropbox Edge Network. <a href="https://tinyurl.com/yyrs68pp">https://tinyurl.com/yyrs68pp</a></p>
+<p>[17] Van Jacobson. 1988. Congestion avoidance and control. SIGCOMM CCR 18, 4 (1988), 314–329.</p>
+<p>[18] Tomoki Kozu, Yuria Akiyama, and Saneyasu Yamaguchi. 2013. Improving RTT fairness on cubic TCP. In 2013 First International Symposium on Computing and Networking. IEEE, 162–167.</p>
+<p>[19] Nick McKeown, Guido Appenzeller, and Isaac Keslassy. 2019. Sizing Router Buffers (Redux). SIGCOMM CCR 49, 5 (2019), 69–74.</p>
+<p>[20] Ayush Mishra, Xiangpeng Sun, Atishya Jain, Sameer Pande, Raj Joshi, and Ben Leong. 2019. The Great Internet TCP Congestion Control Census. In Proceedings of SIGMETRICS.</p>
+<p>[21] Ayush Mishra, Jingzhi Zhang, Melodies Sims, Sean Ng, Raj Joshi, and Ben Leong. 2001. Conjecture: Existence of Nash Equilibria in Modern Internet Congestion Control. In Proceedings of APNet.</p>
+<p>[22] Jitendra Padhye and Sally Floyd. 2001. On Inferring TCP Behavior. In Proceedings of SIGCOMM.</p>
+<p>[23] Vern Paxson and Mark Allman. 2009. TCP Congestion Control. RFC 5681.</p>
+<p>[24] Canada Sandvine Inc. Waterloo, ON. 2018. The 2018 Global Internet Phenomena Report. <a href="https://www.sandvine.com/phenomena">https://www.sandvine.com/phenomena</a></p>
+<p>[25] D. Scholz, B. Jaeger, L. Schwaighofer, D. Raumer, F. Geyer, and G. Carle. 2018. Towards a Deeper Understanding of TCP BBR Congestion Control. In Proceedings of IFIP.</p>
+<p>[26] Satadal Sengupta, Hyojoon Kim, and Jennifer Rexford. 2022. Continuous innetwork round-trip time monitoring. In Proceedings of SIGCOMM.</p>
+<p>[27] Bruce Spang, Serhat Arslan, and Nick McKeown. 2021. Updating the theory of buffer sizing. Performance Evaluation 151 (2021).</p>
+<p>[28] Tuan Anh Trinh and Sándor Molnár. 2004. A Game-Theoretic Analysis of TCP Vegas. In Quality of Service in the Emerging Networking Panorama.</p>
+<p>[29] Belma Turkovic, Fernando A. Kuipers, and Steve Uhlig. 2019. Fifty Shades of Congestion Control: A Performance and Interactions Evaluation. arXiv preprint</p>
+<p>arXiv:1903.03852 (2019).</p>
+<p>[30] RanyshaWare, Matthew K. Mukerjee, Srinivasan Seshan, and Justine Sherry. 2019. Modeling BBR’s Interactions with Loss-Based Congestion Control. In Proceedings of IMC.</p>
+<p>[31] Peng Yang, Juan Shao, Wen Luo, Lisong Xu, Jitendra Deogun, and Ying Lu. 2011. TCP Congestion Avoidance Algorithm Identification. IEEE/ACM Transactions on Networking 22, 4 (2011), 1311–1324.</p>
+<h1 id="Seminar"><a href="#Seminar" class="headerlink" title="Seminar"></a>Seminar</h1><p>Hi everyone, today I wanna present this paper “Are we heading towards a BBR-dominant Internet?”</p>
+<p><strong>Motivation: </strong>BBR congestion control algorithm was introduced by Google in 2016, since then it is proved very effectively and therefore grew and is still growing very rapidly. According to this paper in 2022, namely “Are we heading towards a BBR-dominant Internet?”, BBR has already taken up more than 40% downstream traffic in Internet. What’s more, BBR is also integrated into Linux Kernel 4.9 edition. Therefore, this paper is motivated to see if BBR is gonna dominate Internet traffic just like TCP CUBIC took place New Reno in the past.</p>
+<p>So what’s the different between BBR and “traditional” TCP congestion control algorithm. What I mean of traditional is that they are loss-based, which means they will judge if the Internet is congested if there is a package loss. Package loss is just like a signal to say traffic is jammed.</p>
+<p>Loss-based TCP congestion control algorithm helps the developing of Internet In the first 40 years effectively, but after 2010s, or event after 2000s, Internet entered into a new era, Data linking of more then 10GB bandwidth is now quiet often, especially now WiFi is a very important part of Internet, package loss is very normal in communication, therefore use package loss as a congestion signal is no more fit. On the contrary, Loss-based CC algorithm is really a burden such we can only use 40%-60% of the bandwidth capacity if we use these traditional CC algorithm. As you can see from this fig, Bandwidth usage from package-loss method is sort of Zig-zag, which is not stable and of low usage, but BBR’s line is quite smooth and at high usage.</p>
+<p>In this paper, we will compare how CUBIC and BBR compete each other in term of throughput. Why throughput? Because that’s most companies claim what they are most interested.</p>
+<p>Because this paper mainly focus on transition from CUBIC to BBR, so I will first briefly introduce CUBIC and BBR.</p>
+<p>CUBIC is the newest generation of loss-based CC algorithm. As its name suggested, it uses cubic curve to control congestion window. It has three phases, slow startup, congestion avoidance, and then, a very bold cubic move to explore congestion window.</p>
+<p>Loss-based CC algorithm has 2 major issues: We have already mentioned the first one, package loss is no longer a good signal to indicate congestion. Second is Buffer bloat. Every component in hardware has a buffer, if we don’t consider real lost, package loss would happen only if buffer is full. But we do not design this buffer for this purpose, in this case, RTT will be really large, package would waste most its time on queuing in buffer.</p>
+<p>As for BBR, it will use minRTT and Bottleneck Bandwidth to do congestion control. Why bottleneck is important? Intuitively speaking, general throughput depends on bottleneck link. As you can see in the left part, BBR focus on this part before buffer bloat, while package-loss CC algorithm focus on this latter part after buffer bloat.</p>
+<p>BBR has four status, that’s Startup to explore cwnd quickly, drain to avoid too much exploration, ProbeBW and ProbeRTT.</p>
+<p><strong>Modeling Interaction between BBR and CUBIC: </strong> In this paper, author proposed some mathematical models to calculate bandwidth proportion of BBR and CUBIC. Author first cite previous Ware’s method.</p>
+<p>Paper of Ranysha Ware has already measured the bandwidth proportion of CUBIC and BBR, but author pointed out the possible issues their methodology have. First one is most likely out of simplicity, they just assume the buffer is always full, but even their own paper’s experiment proved, this assumption doesn’t hold. Second is the oversimplification of calculation of BBR’s RTT, here p represents the competing CUBIC flows’ aggregate fraction, and q is the average queuing delay in the bottleneck buffer</p>
+<p><strong>Assumptions made by author: </strong> The most important assumption made by author is that they assume all flows have same RTT, to some extent this is plausible, because nowadays CDN is very often, especially in video, news streaming. But this assumption is also one of the limitation in this paper, which we will discuss later.</p>
+<p>Here are formula proposed by author. Basic 2-Flow model is just like that, and modeling multiple flows is not very different. 念ppt上的内容 CUBIC upper bound remains same, because it always tries to fill the buffer, regardless of how many flows there are. One key difference is different lower bounds for CUBIC Synchronized and De-Synchronized flows</p>
+<p><strong>Model Validation:</strong> Since we have constructed our model, the next step is to validate them with experiments. The first experiment is to evaluate the accuracy of our simple model that predicts the bandwidth shares of two competing CUBIC and BBR flows. Bottleneck Bandwidth and min RTT are 2 key variables in validation experiments. And authors have done multiple experiments in different combination of Bottleneck Bandwidth &amp; min RTT. As you can see in Fig.3, X axis is Buffer size, which has normalized into BDP. Author’s model can predict BBR’s bandwidth proportion with small error relative to Ware’s method.</p>
+<p>The second experiment illustrated how authors’ model predict for multiple flows. Similar as the first experiment, nut pay attention to this blue interval formed by CUBIC sync bound &amp; de-sync bound. We can observe that CUBIC de-sync is much more close to actual bandwidth share.</p>
+<p>In the first 2 experiments, we have observed different bandwidth competition for same proportion of BBR’s flow under different mim RTT &amp; Bottleneck bandwidth. The third experiment is to tweak proportion of BBR’s flow in Internet, that’s what we care most in this paper in order to find whether BBR is gonna dominate Internet stream.</p>
+<p>The most important takeaway from these experiments is that BBR’s average per-flow bandwidth reduces as the proportion of flows running BBR at the bottleneck increases. This suggests that as more and more users on the Internet start using BBR as their congestion control algorithm, the throughput advantage currently enjoyed by BBR over CUBIC will be reduced. This suggests that BBR and CUBIC will achieve some sort of balance point as we will discuss next.</p>
+<p><strong>Apply game theory: </strong> We will now try to apply game theory to predict future CC algorithm trends. For simplicity, author only takes throughput as utility indicator. If a user can enjoy higher throughput by switching to the other CC algorithm, then there would be an incentive to switch. By definition of Nash Equilibrium, A Nash Equilibrium (NE) distribution of CUBIC and BBR flows occurs when none of the users have any incentive to switch, either because doing so will not result in increased throughput.</p>
+<p>Author showed that a NE must exist when flows with similar RTTs compete at a bottleneck.</p>
+<p>The dotted line on this graph represents the fair-share line, where the average bandwidth of the BBR flows is equal to the fair-share bandwidth (i.e. link capacity divided by the total number of flows). When the Bandwidth share for each BBR flow is same as fair-share line, we say it reaches Nash Equilibrium. Like the graph suggested, there could be two theoretical situation. A-B upper line means BBR always above average, and users are not incentive to switch from BBR to CUBIC. Or A-C-B line, where C would be our NE point, across that point, CUBIC and BBR should be switched.</p>
+<p><strong>Experimental verification of NE: </strong>Now we will do another experiments to evaluate the validity of our model predicting NE point.</p>
+<p>The experiment setup is 50 competing flows. The bottleneck bandwidth was set to 100 Mbps and 50 Mbps with the buffer size varying from 0.5 to 50 times the BDP. All these flows had the same base RTT which were 20, 40, and 80 ms across different trials. All the NE found empirically were in the interval predicted by our model, except those at high BDPs. BBR is not cwnd-limited in these regions and hence our model does not work well, which explains why the actual NE deviates from our predictions.</p>
+<p>Another interesting trend observed in this experiment is that the NE region predicted by the model is exactly the same regardless of the base RTT or the bottleneck link capacity. This suggests that where the NE lies does not independently depend on either the link capacity $C$ or the $RTT$ , but the BDP</p>
+<p><strong>Other CC algorithms: </strong> The results for CUBIC and BBR in previous part are based on only two assumptions: (i) BBR is able to obtain a disproportionately large share of the bottleneck bandwidth for at least one distribution; and (ii) when all the flows are BBR, the BBR flows will take up the available bottleneck bandwidth. The latter is self-evident if we replace BBR with another congestion control algorithm. If we can show that the former property is also true for another congestion control algorithm X, then an NE distribution of CUBIC and X flows must also exist when flows with similar RTTs compete at a bottleneck.</p>
+<p>Author did experiments on some new CC algorithm, and find out only Copa doesn’t apply because it fails the first assumption.</p>
+<p><strong>Limitation &amp; Future works</strong></p>
+<p>One of the biggest limitation of this paper is to assume same RTT for different flows in order to simplify, otherwise, the status space could grow exponentially and hard to do experiment. However in reality, this hardly holds true.</p>
+<p>Under simple utility functions that are linear combinations of throughput and delay, a Nash Equilibrium distribution will still exist. This is because we expect the decision to select between different congestion control algorithms to still be dominated by the throughput gains in such settings. That said, it is still unclear how the flows will react where all the participating flows have drastically different utility functions. Investigating whether Nash Equilibria will exist and what the distributions would look like for complex utility remains future work. It seems 50 flows is rather a big number, but it is quiet small compared to the real number in Internet</p>
+<p><strong>Conclusion: </strong>Author developed a new model that is able to accurately model BBR’s performance to within 5% error for most realistic buffer sizes.</p>
+]]></content>
+  </entry>
 </search>
